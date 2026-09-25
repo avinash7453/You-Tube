@@ -61,11 +61,11 @@ const ChannelIndex = () => {
         ];
 
         return (
-            <div className='flex-1 min-h-screen bg-white'>
-                <div className='max-w-full mx-auto'>
+            <div className='min-h-screen bg-gradient-to-b from-violet-50/60 via-white to-white'>
+                <div className='mx-auto max-w-7xl'>
                     <ChannelHeader channel={channel} user={user} />
                     <ChannelTabs />
-                    <div className='px-4 pb-8'>
+                    <div className='px-4 pb-8 pt-6 md:px-8'>
                         <VideoUploader channelId={id} channelName={channel.channelname} />
                     </div>
                     <div>

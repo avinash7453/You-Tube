@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
-import { Bell, Menu, Mic, Search, User as UserIcon, Video } from "lucide-react";
+import { Bell, Menu, Mic, Moon, Search, Sun, User as UserIcon, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,14 +12,28 @@ import {
 import Channeldialogue from "@/components/Channeldialogue";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/lib/AuthContext";
+import axiosInstance from "@/lib/axiosinstance";
 
 const Header = () => {
-  const { User, loading, logout, handlegooglesignin } = useUser();
+  const { User, loading, logout, login, handlegooglesignin } = useUser();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   const router = useRouter();
+
+  const handleThemeChange = async () => {
+    if (!User) return;
+    const theme = User.theme === "dark" ? "light" : "dark";
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    document.documentElement.style.colorScheme = theme;
+    try {
+      const response = await axiosInstance.patch(`/user/update/${User._id || User.id}`, { theme });
+      login(response.data.result);
+    } catch (error) {
+      console.error("Unable to save theme preference:", error);
+    }
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,25 +49,25 @@ const Header = () => {
   };
 
   return (
-    <header className="border-b bg-white px-4 py-3 shadow-sm sticky top-0 z-50">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+    <header className="sticky top-0 z-50 border-b bg-white px-3 py-2">
+      <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" type="button" aria-label="Open menu">
             <Menu className="h-5 w-5" />
           </Button>
 
-          <Link href="/" className="flex items-center gap-2">
-            <div className="rounded bg-red-600 p-1.5">
+          <Link href="/" className="group flex items-center gap-2">
+            <div className="rounded-lg bg-gradient-to-br from-red-500 via-rose-600 to-orange-500 p-1.5 shadow-md shadow-red-200 transition group-hover:scale-105">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="white" aria-hidden="true">
                 <path d="M10 15l5-3-5-3v6z" />
               </svg>
             </div>
-            <span className="text-lg font-semibold tracking-tight">yourtube</span>
+            <span className="bg-gradient-to-r from-red-600 via-rose-600 to-orange-500 bg-clip-text text-lg font-extrabold tracking-tight text-transparent">YourTube</span>
           </Link>
         </div>
 
-        <form onSubmit={handleSearch} className="hidden flex-1 max-w-2xl items-center gap-2 md:flex">
-          <div className="flex w-full items-center rounded-full border border-gray-300 bg-gray-50 px-3 py-1.5">
+        <form onSubmit={handleSearch} className="hidden max-w-xl flex-1 items-center gap-1 md:flex">
+          <div className="flex w-full items-center rounded border border-gray-300 bg-white px-3 py-1">
             <Search className="mr-2 h-4 w-4 text-gray-500" />
             <input
               type="search"
@@ -64,10 +78,10 @@ const Header = () => {
               className="w-full border-0 bg-transparent outline-none"
             />
           </div>
-          <Button type="submit" variant="ghost" size="icon" aria-label="Search">
+          <Button type="submit" variant="ghost" size="icon-sm" aria-label="Search">
             <Search className="h-4 w-4" />
           </Button>
-          <Button type="button" variant="ghost" size="icon" aria-label="Voice search">
+          <Button type="button" variant="ghost" size="icon-sm" aria-label="Voice search">
             <Mic className="h-4 w-4" />
           </Button>
         </form>
@@ -83,6 +97,9 @@ const Header = () => {
               <Button variant="ghost" size="icon" type="button" aria-label="Notifications">
                 <Bell className="h-5 w-5" />
               </Button>
+              <Button variant="ghost" size="icon" type="button" aria-label="Change theme" onClick={handleThemeChange}>
+                {User.theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              </Button>
 
               {/* Profile Dropdown Menu */}
               <DropdownMenu>
@@ -96,12 +113,12 @@ const Header = () => {
                 <DropdownMenuContent className="w-56 bg-white shadow-md border border-gray-200" align="end">
                   {User?.channelname ? (
                     <DropdownMenuItem>
-                      <Link href={`/channel/${User.id}`} className="w-full block text-blue-600 font-medium">
+                      <Link href={`/channel/${User._id || User.id}`} className="w-full block text-blue-600 font-medium">
                         Your channel
                       </Link>
                     </DropdownMenuItem>
                   ) : (
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onSelect={(event) => event.preventDefault()}>
                       <button
                         onClick={() => setIsDialogOpen(true)}
                         className="w-full text-left text-blue-600 font-medium"
@@ -119,6 +136,12 @@ const Header = () => {
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <Link href="/watch-later" className="w-full block">Watch later</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link href="/downloads" className="w-full block">Downloads</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link href="/plans" className="w-full block">Upgrade plan</Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="my-1 border-t border-gray-200" />
                   <DropdownMenuItem className="text-red-600 cursor-pointer" onClick={logout}>

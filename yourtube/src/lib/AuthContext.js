@@ -9,6 +9,33 @@ export const UserProvider = ({ children }) => {
     const [User, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const getDeviceId = () => {
+        const key = "yourtube_device_id";
+        const existing = localStorage.getItem(key);
+        if (existing) return existing;
+        const created = crypto.randomUUID();
+        localStorage.setItem(key, created);
+        return created;
+    };
+
+    const getRegion = () =>
+        Intl.DateTimeFormat().resolvedOptions().timeZone || navigator.language || "unknown";
+
+    const applyTheme = (theme) => {
+        document.documentElement.classList.toggle("dark", theme === "dark");
+        document.documentElement.style.colorScheme = theme;
+    };
+
+    const defaultLoginTheme = () => {
+        const parts = new Intl.DateTimeFormat("en-IN", {
+            timeZone: "Asia/Kolkata",
+            hour: "2-digit",
+            hourCycle: "h23",
+        }).formatToParts(new Date());
+        const hour = Number(parts.find((part) => part.type === "hour")?.value);
+        return hour >= 10 && hour < 12 ? "light" : "dark";
+    };
+
     useEffect(() => {
         const savedUser = localStorage.getItem("user");
         if (savedUser) {
@@ -24,6 +51,7 @@ export const UserProvider = ({ children }) => {
     const login = (userdata) => {
         setUser(userdata);
         localStorage.setItem("user", JSON.stringify(userdata));
+        applyTheme(userdata.theme || defaultLoginTheme());
     };
 
     const logout = async () => {
@@ -44,11 +72,23 @@ export const UserProvider = ({ children }) => {
             const payload = {
                 email: firebaseuser.email,
                 name: firebaseuser.displayName,
-                image: firebaseuser.photoURL || "https://github.com/shadcn.png"
+                image: firebaseuser.photoURL || "https://github.com/shadcn.png",
+                deviceId: getDeviceId(),
+                region: getRegion(),
             };
             
             const response = await axiosInstance.post("/user/login", payload);
-            login(response.data.result);
+            if (response.data.requiresOtp) {
+                const otp = window.prompt("Enter the verification code sent to your email");
+                if (!otp) throw new Error("Login verification was cancelled");
+                const verified = await axiosInstance.post("/user/verify-otp", {
+                    userId: response.data.userId,
+                    otp,
+                });
+                login(verified.data.result);
+            } else {
+                login(response.data.result);
+            }
         } catch (error) {
             console.error(error);
         }
@@ -61,10 +101,22 @@ export const UserProvider = ({ children }) => {
                     const payload = {
                         email: firebaseuser.email,
                         name: firebaseuser.displayName,
-                        image: firebaseuser.photoURL || "https://github.com/shadcn.png"
+                        image: firebaseuser.photoURL || "https://github.com/shadcn.png",
+                        deviceId: getDeviceId(),
+                        region: getRegion(),
                     };
                     const response = await axiosInstance.post("/user/login", payload);
-                    login(response.data.result);
+                    if (response.data.requiresOtp) {
+                        const otp = window.prompt("Enter the verification code sent to your email");
+                        if (!otp) throw new Error("Login verification was cancelled");
+                        const verified = await axiosInstance.post("/user/verify-otp", {
+                            userId: response.data.userId,
+                            otp,
+                        });
+                        login(verified.data.result);
+                    } else {
+                        login(response.data.result);
+                    }
                 } catch (error) {
                     console.error(error);
                     await logout();
@@ -72,6 +124,18 @@ export const UserProvider = ({ children }) => {
             }
         });
         return () => unsubscribe();
+    }, []);
+
+    useEffect(() => {
+        const savedUser = localStorage.getItem("user");
+        if (savedUser) {
+            try {
+                const parsed = JSON.parse(savedUser);
+                applyTheme(parsed.theme || defaultLoginTheme());
+            } catch {}
+        } else {
+            applyTheme(defaultLoginTheme());
+        }
     }, []);
 
     return (

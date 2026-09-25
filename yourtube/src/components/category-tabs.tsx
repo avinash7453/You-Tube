@@ -20,7 +20,7 @@ const CategoryTabs = () => {
   const [activeCategory, setActiveCategory] = useState("ALL");
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex gap-2 overflow-x-auto pb-2">
       {categories.map((category) => {
         const isActive = activeCategory === category;
 
@@ -28,14 +28,14 @@ const CategoryTabs = () => {
           <button
             key={category}
             type="button"
-            className={`rounded-full px-3 py-2 text-sm font-medium transition ${
+            className={`shrink-0 rounded-md px-3 py-1.5 text-xs font-medium transition ${
               isActive
                 ? "bg-black text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
             onClick={() => setActiveCategory(category)}
           >
-            {category}
+            {category.charAt(0) + category.slice(1).toLowerCase()}
           </button>
         );
       })}

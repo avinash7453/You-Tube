@@ -37,16 +37,17 @@ const Channeldialogue = ({ isopen, onclose, channeldata, mode }: any) => {
             channelname: formData.name,
             description: formData.description,
         };
+        const userId = User?._id || User?.id;
 
-        if (!User?.id) {
+        if (!userId) {
             return;
         }
 
         try {
             setisSubmitting(true);
-            const response = await axiosInstance.patch(`/user/update/${User.id}`, payload);
+            const response = await axiosInstance.patch(`/user/update/${userId}`, payload);
             login(response.data.result);
-            router.push(`/channel/${User.id}`);
+            router.push(`/channel/${userId}`);
             setFormData({
                 name: "",
                 description: "",

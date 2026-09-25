@@ -11,22 +11,40 @@ import { formatDistanceToNow } from 'date-fns';
 import { useUser } from "@/lib/AuthContext";
 import axiosInstance from '@/lib/axiosinstance';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { useRouter } from 'next/router';
 
 const Videoinfo = ({ video }: { video: any }) => {
     const { user } = useUser();
-    const [likes, setlikes] = useState(video.Like || 0);
+    const [likes, setlikes] = useState(Math.max(0, video.likes ?? video.Like ?? 0));
     const [dislikes, setDislikes] = useState(video.Dislike || 0);
     const [isLiked, setIsLiked] = useState(false);
     const [isDisliked, setIsDisliked] = useState(false);
     const [isWatchLater, setIsWatchLater] = useState(false);
     const [showFullDescription, setShowFullDescription] = useState(false);
+    const [isDownloading, setIsDownloading] = useState(false);
+    const router = useRouter();
+
+    const shareVideo = async () => {
+        const url = window.location.href;
+        try {
+            if (navigator.share) {
+                await navigator.share({ title: video.videotitle, url });
+            } else {
+                await navigator.clipboard.writeText(url);
+                toast.success("Video link copied.");
+            }
+        } catch (error: any) {
+            if (error?.name !== "AbortError") toast.error("Unable to share this video.");
+        }
+    };
 
     const descriptionText = video.description || "Sample video description. This would contain the actual description from the database and is intentionally longer so the show more and show less controls appear for testing.";
     const publishedDate = video.createdAt ? new Date(video.createdAt) : new Date();
     const shouldShowToggle = descriptionText.length > 100;
 
     useEffect(() => {
-        setlikes(video.Like || 0);
+        setlikes(Math.max(0, video.likes ?? video.Like ?? 0));
         setDislikes(video.Dislike || 0);
         setIsLiked(false);
         setIsDisliked(false);
@@ -44,7 +62,7 @@ const Videoinfo = ({ video }: { video: any }) => {
                     return console.log(error);
                 }
             } else {
-                return await axiosInstance.get(`/history/views/${video?._id || video?.id}`);
+                return await axiosInstance.post(`/history/views/${video?._id || video?.id}`);
             }
         };
         handleviews();
@@ -56,18 +74,13 @@ const Videoinfo = ({ video }: { video: any }) => {
             const res = await axiosInstance.post(`/like/${video._id || video.id}`, {
                 userId: user?._id,
             });
-            if (res.data.liked) {
-                if (isLiked) {
-                    setlikes((prev: any) => prev - 1);
-                    setIsLiked(false);
-                } else {
-                    setlikes((prev: any) => prev + 1);
-                    setIsLiked(true);
-                    if (isDisliked) {
-                        setDislikes((prev: any) => prev - 1);
-                        setIsDisliked(false);
-                    }
-                }
+            if (typeof res.data.likes === "number") {
+                setlikes(Math.max(0, res.data.likes));
+            }
+            setIsLiked(res.data.liked);
+            if (res.data.liked && isDisliked) {
+                setDislikes((prev: any) => Math.max(0, prev - 1));
+                setIsDisliked(false);
             }
         } catch (error) {
             console.log(error);
@@ -111,6 +124,55 @@ const Videoinfo = ({ video }: { video: any }) => {
             }
         } catch (error) {
             console.log(error);
+        }
+    };
+
+    const handleDownload = async () => {
+        const userId = user?._id || user?.id;
+        const videoId = video?._id || video?.id;
+        if (!userId) {
+            toast.error("Sign in to download videos.");
+            return;
+        }
+        if (!videoId) {
+            toast.error("This video cannot be downloaded.");
+            return;
+        }
+        setIsDownloading(true);
+        try {
+            const response = await axiosInstance.post(`/download/${videoId}`, { userId });
+            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+            const link = document.createElement("a");
+            link.href = `${backendUrl}${response.data.url}`;
+            link.download = video.filename || `${video.videotitle}.mp4`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            toast.success(`Download started. ${response.data.remaining} downloads remaining today.`);
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || "Unable to download this video.");
+        } finally {
+            setIsDownloading(false);
+        }
+    };
+
+    const createWatchParty = async () => {
+        const userId = user?._id || user?.id;
+        const videoId = video?._id || video?.id;
+        if (!userId || !videoId) {
+            toast.error("Sign in to start a watch party.");
+            return;
+        }
+        try {
+            const response = await axiosInstance.post("/watchparty", {
+                videoId,
+                videoPath: video.filepath,
+                hostId: userId,
+                name: user.name || "Host",
+            });
+            await router.push(`/watch-party/${response.data.roomId}`);
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || "Unable to create watch party.");
         }
     };
 
@@ -165,14 +227,23 @@ const Videoinfo = ({ video }: { video: any }) => {
                     {isWatchLater ? "Saved" : "Watch Later"}
                 </Button>
 
-                <Button variant="ghost" size="sm" className="bg-gray-100 rounded-full">
+                <Button variant="ghost" size="sm" className="bg-gray-100 rounded-full" onClick={shareVideo}>
                     <Share className="w-5 h-5 mr-2" />
                     Share
                 </Button>
+                <Button variant="ghost" size="sm" className="bg-gray-100 rounded-full" onClick={createWatchParty}>
+                    Watch party
+                </Button>
 
-                <Button variant="ghost" size="sm" className="bg-gray-100 rounded-full">
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="bg-gray-100 rounded-full"
+                    onClick={handleDownload}
+                    disabled={isDownloading}
+                >
                     <Download className="w-5 h-5 mr-2" />
-                    Download
+                    {isDownloading ? "Preparing..." : "Download"}
                 </Button>
 
                 <Button variant="ghost" size="icon" className="bg-gray-100 rounded-full">

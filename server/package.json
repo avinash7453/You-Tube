@@ -21,6 +21,11 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.9.2",
     "multer": "^2.2.0",
-    "nodemon": "^3.1.14"
+    "nodemailer": "^7.0.6",
+    "nodemon": "^3.1.14",
+    "razorpay": "^2.9.6"
+  },
+  "devDependencies": {
+    "@ljharb/tsconfig": "^0.3.2"
   }
 }

@@ -1,5 +1,38 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
 
+## Subscription payments
+
+The `/plans` page uses Razorpay test checkout. Configure these server environment
+variables before enabling payments:
+
+```env
+RAZORPAY_KEY_ID=your_test_key_id
+RAZORPAY_KEY_SECRET=your_test_key_secret
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=your_smtp_user
+SMTP_PASS=your_smtp_password
+SMTP_FROM=YourTube <billing@example.com>
+TRANSLATION_API_URL=https://api.mymemory.translated.net/get
+# Optional for LibreTranslate-compatible providers:
+TRANSLATION_API_KEY=your_translation_api_key
+```
+
+SMTP variables are optional; when omitted, payment succeeds but no confirmation
+email is sent. Payment signatures are verified on the server before the user's
+plan is updated. Plans are `free`, `bronze`, `silver`, and `gold`.
+
+The same SMTP settings are used for new-device login OTP verification. The
+browser supplies a generated device ID and timezone-based region; the first
+device is trusted, and a new device or region requires a six-digit OTP sent to
+the user's registered email.
+
+Comment translation is proxied through the backend at
+`POST /comment/translate`. The local configuration uses MyMemory's no-key
+development endpoint. For production, use a provider with an API key and set
+`TRANSLATION_API_URL` and, when required, `TRANSLATION_API_KEY` on the server.
+Restart the backend after changing these values.
+
 ## Getting Started
 
 First, run the development server:

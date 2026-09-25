@@ -9,11 +9,11 @@ const Sidebar = () => {
   const [isdialogopen, setisdialogopen] = useState(false)
 
   return (
-    <aside className="hidden w-64 border-r bg-gray-50 p-4 lg:block">
-      <nav className="space-y-2">
+    <aside className="hidden w-24 shrink-0 border-r bg-white px-2 py-3 sm:block md:w-36">
+      <nav className="space-y-1">
         <Link
           href="/"
-          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-200"
+          className="flex flex-col items-center gap-1 rounded-md px-1 py-2 text-[10px] text-gray-700 hover:bg-gray-100 md:flex-row md:gap-2 md:px-3 md:text-xs"
         >
           <Home className="h-4 w-4" />
           <span>Home</span>
@@ -21,7 +21,7 @@ const Sidebar = () => {
 
         <Link
           href="/explore"
-          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-200"
+          className="flex flex-col items-center gap-1 rounded-md px-1 py-2 text-[10px] text-gray-700 hover:bg-gray-100 md:flex-row md:gap-2 md:px-3 md:text-xs"
         >
           <Compass className="h-4 w-4" />
           <span>Explore</span>
@@ -36,10 +36,10 @@ const Sidebar = () => {
         </Link>
 
         {User && (
-          <div className="mt-4 border-t pt-3">
+          <div className="mt-3 border-t pt-3">
             <Link
               href="/history"
-              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-200"
+              className="flex flex-col items-center gap-1 rounded-md px-1 py-2 text-[10px] text-gray-700 hover:bg-gray-100 md:flex-row md:gap-2 md:px-3 md:text-xs"
             >
               <HistoryIcon className="h-4 w-4" />
               <span>History</span>
@@ -47,7 +47,7 @@ const Sidebar = () => {
 
             <Link
               href="/liked"
-              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-200"
+              className="flex flex-col items-center gap-1 rounded-md px-1 py-2 text-[10px] text-gray-700 hover:bg-gray-100 md:flex-row md:gap-2 md:px-3 md:text-xs"
             >
               <ThumbsUp className="h-4 w-4" />
               <span>Liked Videos</span>
@@ -55,18 +55,30 @@ const Sidebar = () => {
 
             <Link
               href="/watch-later"
-              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-200"
+              className="flex flex-col items-center gap-1 rounded-md px-1 py-2 text-[10px] text-gray-700 hover:bg-gray-100 md:flex-row md:gap-2 md:px-3 md:text-xs"
             >
               <Clock3 className="h-4 w-4" />
               <span>Watch Later</span>
             </Link>
+            <Link
+              href="/downloads"
+              className="flex flex-col items-center gap-1 rounded-md px-1 py-2 text-[10px] text-gray-700 hover:bg-gray-100 md:flex-row md:gap-2 md:px-3 md:text-xs"
+            >
+              <span>Downloads</span>
+            </Link>
+            <Link
+              href="/plans"
+              className="flex flex-col items-center gap-1 rounded-md px-1 py-2 text-[10px] text-gray-700 hover:bg-gray-100 md:flex-row md:gap-2 md:px-3 md:text-xs"
+            >
+              <span>Upgrade plan</span>
+            </Link>
 
-            {User?. channelname ? (
-              <Link href={`/channel/${User.id}`} className="w-full block">Your channel</Link>
+            {User?.channelname ? (
+              <Link href={`/channel/${User._id || User.id}`} className="w-full block">Your channel</Link>
             ) : (
               <button
                 onClick={() => setisdialogopen(true)}
-                className="w-full text-left text-blue-600 font-medium"
+                className="w-full px-2 py-2 text-left text-xs font-medium text-blue-600"
               >
                 Create a channel
               </button>

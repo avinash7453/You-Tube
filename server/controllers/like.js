@@ -11,12 +11,14 @@ export const handlelike = async (req, res) => {
         });
         if (exisitinglike) {
             await like.findByIdAndDelete(exisitinglike._id);
-            await video.findByIdAndUpdate(videoId, { $inc: { Like: -1 } });
-            return res.status(200).json({ liked: false });
+            const likes = await like.countDocuments({ videoid: videoId });
+            await video.findByIdAndUpdate(videoId, { $set: { likes } });
+            return res.status(200).json({ liked: false, likes });
         } else {
             await like.create({ viewer: userId, videoid: videoId });
-            await video.findByIdAndUpdate(videoId, { $inc: { Like: 1 } });
-            return res.status(200).json({ liked: true });
+            const likes = await like.countDocuments({ videoid: videoId });
+            await video.findByIdAndUpdate(videoId, { $set: { likes } });
+            return res.status(200).json({ liked: true, likes });
         }
     } catch (error) {
         console.error("Like error:", error);

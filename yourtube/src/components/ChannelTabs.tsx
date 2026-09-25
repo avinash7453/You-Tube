@@ -14,21 +14,17 @@ const ChannelTabs = () => {
   const [activeTab, setActiveTab] = useState('videos');
 
   return (
-    <div style={{ display: 'flex', gap: '1rem', padding: '0.75rem 0', borderBottom: '1px solid #e5e7eb', overflowX: 'auto' }}>
+    <div className="flex gap-6 overflow-x-auto border-b border-gray-200 bg-white px-4 md:px-8">
       {tabs.map((tab) => (
         <button
           key={tab.id}
           type="button"
           onClick={() => setActiveTab(tab.id)}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            borderBottom: activeTab === tab.id ? '2px solid #111827' : '2px solid transparent',
-            color: activeTab === tab.id ? '#111827' : '#6b7280',
-            padding: '0.5rem 0.25rem',
-            fontWeight: activeTab === tab.id ? 600 : 500,
-            cursor: 'pointer',
-          }}
+          className={`shrink-0 border-b-2 px-1 py-3 text-sm transition ${
+            activeTab === tab.id
+              ? 'border-violet-600 font-semibold text-violet-700'
+              : 'border-transparent font-medium text-gray-500 hover:border-gray-300 hover:text-gray-900'
+          }`}
         >
           {tab.label}
         </button>

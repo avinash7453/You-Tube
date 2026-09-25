@@ -46,15 +46,19 @@ const Index = () => {
 
   // Filter out the currently playing video from the related list
   const relatedVideosList = videos.filter((item: any) => item._id !== video._id);
+  const nextVideo = relatedVideosList[0];
+  const goToNextVideo = () => {
+    if (nextVideo?._id) router.push(`/watch/${nextVideo._id}`);
+  };
 
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto p-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-4">
-            <Videopplayer video={video} />
+            <Videopplayer video={video} nextVideo={nextVideo} onNext={goToNextVideo} />
             <VideoInfo video={video} />
-            <Comments videoId={id} />
+            <Comments videoId={String(video._id)} />
           </div>
           <div className="space-y-4">
             <RelatedVideos videos={relatedVideosList} />
