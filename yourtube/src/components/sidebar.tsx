@@ -74,11 +74,16 @@ const Sidebar = () => {
             </Link>
 
             {User?.channelname ? (
-              <Link href={`/channel/${User._id || User.id}`} className="w-full block">Your channel</Link>
+              <Link
+                href={`/channel/${User._id || User.id}`}
+                className="mt-2 block w-full rounded-lg bg-gradient-to-r from-violet-600 to-fuchsia-600 px-3 py-2 text-center text-xs font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md md:text-left"
+              >
+                Your channel
+              </Link>
             ) : (
               <button
                 onClick={() => setisdialogopen(true)}
-                className="w-full px-2 py-2 text-left text-xs font-medium text-blue-600"
+                className="w-full rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 px-3 py-2 text-left text-xs font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
               >
                 Create a channel
               </button>

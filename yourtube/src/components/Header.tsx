@@ -52,7 +52,7 @@ const Header = () => {
     <header className="sticky top-0 z-50 border-b bg-white px-3 py-2">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" type="button" aria-label="Open menu">
+          <Button variant="ghost" size="icon" type="button" aria-label="Open menu" className="text-gray-700 hover:bg-gray-100 hover:text-gray-950 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-white">
             <Menu className="h-5 w-5" />
           </Button>
 
@@ -78,10 +78,10 @@ const Header = () => {
               className="w-full border-0 bg-transparent outline-none"
             />
           </div>
-          <Button type="submit" variant="ghost" size="icon-sm" aria-label="Search">
+          <Button type="submit" variant="ghost" size="icon-sm" aria-label="Search" className="text-gray-700 hover:bg-gray-100 hover:text-gray-950 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-white">
             <Search className="h-4 w-4" />
           </Button>
-          <Button type="button" variant="ghost" size="icon-sm" aria-label="Voice search">
+          <Button type="button" variant="ghost" size="icon-sm" aria-label="Voice search" className="text-gray-700 hover:bg-gray-100 hover:text-gray-950 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-white">
             <Mic className="h-4 w-4" />
           </Button>
         </form>
@@ -91,13 +91,13 @@ const Header = () => {
             <div className="h-9 w-9 animate-pulse rounded-full bg-gray-200" />
           ) : User ? (
             <>
-              <Button variant="ghost" size="icon" type="button" aria-label="Create video">
+              <Button variant="ghost" size="icon" type="button" aria-label="Create video" className="text-gray-700 hover:bg-gray-100 hover:text-gray-950 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-white">
                 <Video className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon" type="button" aria-label="Notifications">
+              <Button variant="ghost" size="icon" type="button" aria-label="Notifications" className="text-gray-700 hover:bg-gray-100 hover:text-gray-950 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-white">
                 <Bell className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon" type="button" aria-label="Change theme" onClick={handleThemeChange}>
+              <Button variant="ghost" size="icon" type="button" aria-label="Change theme" onClick={handleThemeChange} className="text-gray-700 hover:bg-gray-100 hover:text-gray-950 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-white">
                 {User.theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               </Button>
 
@@ -110,10 +110,10 @@ const Header = () => {
                     User.name ? User.name.charAt(0).toUpperCase() : "U"
                   )}
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 bg-white shadow-md border border-gray-200" align="end">
+                <DropdownMenuContent className="w-56 border border-gray-200 bg-white text-gray-900 shadow-md dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" align="end">
                   {User?.channelname ? (
                     <DropdownMenuItem>
-                      <Link href={`/channel/${User._id || User.id}`} className="w-full block text-blue-600 font-medium">
+                      <Link href={`/channel/${User._id || User.id}`} className="block w-full rounded-md px-2 py-1.5 font-semibold text-blue-700 hover:bg-blue-50 dark:text-blue-300 dark:hover:bg-gray-800">
                         Your channel
                       </Link>
                     </DropdownMenuItem>
@@ -121,7 +121,7 @@ const Header = () => {
                     <DropdownMenuItem onSelect={(event) => event.preventDefault()}>
                       <button
                         onClick={() => setIsDialogOpen(true)}
-                        className="w-full text-left text-blue-600 font-medium"
+                        className="w-full rounded-md px-2 py-1.5 text-left font-semibold text-blue-700 hover:bg-blue-50 dark:text-blue-300 dark:hover:bg-gray-800"
                       >
                         Create a channel
                       </button>
@@ -129,29 +129,29 @@ const Header = () => {
                   )}
 
                   <DropdownMenuItem>
-                    <Link href="/history" className="w-full block">History</Link>
+                    <Link href="/history" className="block w-full rounded-md px-2 py-1.5 text-gray-800 hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-800">History</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <Link href="/liked" className="w-full block">Liked videos</Link>
+                    <Link href="/liked" className="block w-full rounded-md px-2 py-1.5 text-gray-800 hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-800">Liked videos</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <Link href="/watch-later" className="w-full block">Watch later</Link>
+                    <Link href="/watch-later" className="block w-full rounded-md px-2 py-1.5 text-gray-800 hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-800">Watch later</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <Link href="/downloads" className="w-full block">Downloads</Link>
+                    <Link href="/downloads" className="block w-full rounded-md px-2 py-1.5 text-gray-800 hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-800">Downloads</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <Link href="/plans" className="w-full block">Upgrade plan</Link>
+                    <Link href="/plans" className="block w-full rounded-md px-2 py-1.5 font-semibold text-violet-700 hover:bg-violet-50 dark:text-violet-300 dark:hover:bg-gray-800">Upgrade plan</Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="my-1 border-t border-gray-200" />
-                  <DropdownMenuItem className="text-red-600 cursor-pointer" onClick={logout}>
+                  <DropdownMenuItem className="cursor-pointer font-semibold text-red-600 dark:text-red-400" onClick={logout}>
                     Sign out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </>
           ) : (
-            <Button className="flex items-center gap-2" onClick={handlegooglesignin}>
+            <Button className="flex items-center gap-2 bg-blue-600 text-white hover:bg-blue-700" onClick={handlegooglesignin}>
               <UserIcon className="w-4 h-4" />
               Sign in
             </Button>

@@ -200,12 +200,12 @@ const Comments = ({ videoId }: { videoId?: string | string[] }) => {
     };
 
     if (loading) {
-        return <div>Loading comments...</div>;
+        return <div className="text-gray-700 dark:text-gray-300">Loading comments...</div>;
     }
 
     return (
-        <div className="space-y-6">
-            <h2 className="text-xl font-semibold">{comments.length} Comments</h2>
+        <div className="space-y-6 rounded-lg bg-white p-1 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{comments.length} Comments</h2>
 
             {submitError && (
                 <p className="text-sm text-red-600" role="alert">{submitError}</p>
@@ -226,13 +226,13 @@ const Comments = ({ videoId }: { videoId?: string | string[] }) => {
                             value={newComment}
                             onChange={(e) => setNewComment(e.target.value)}
                         />
-                        <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
+                        <div className="flex flex-wrap items-center gap-3 text-sm text-gray-700 dark:text-gray-300">
                             <label className="flex items-center gap-2">
                                 Comment language
                                 <select
                                     value={commentLanguage}
                                     onChange={(event) => setCommentLanguage(event.target.value)}
-                                    className="rounded border border-gray-300 bg-white px-2 py-1"
+                                    className="rounded border border-gray-300 bg-white px-2 py-1 text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
                                 >
                                     <option value="auto">Auto-detect</option>
                                     <option value="en">English</option>
@@ -255,7 +255,7 @@ const Comments = ({ videoId }: { videoId?: string | string[] }) => {
                                     value={location}
                                     onChange={(event) => setLocation(event.target.value)}
                                     placeholder="Optional location"
-                                    className="rounded border border-gray-300 px-2 py-1"
+                                    className="rounded border border-gray-300 bg-white text-gray-900 px-2 py-1 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
                                 />
                             )}
                         </div>
@@ -281,7 +281,7 @@ const Comments = ({ videoId }: { videoId?: string | string[] }) => {
 
             <div className="space-y-4">
                 {comments.length === 0 ? (
-                    <p className="text-sm text-gray-500 italic">
+                    <p className="text-sm italic text-gray-600 dark:text-gray-400">
                         No comments yet. Be the first to comment!
                     </p>
                 ) : (
@@ -293,10 +293,10 @@ const Comments = ({ videoId }: { videoId?: string | string[] }) => {
                             </Avatar>
                             <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-1">
-                                    <span className="font-medium text-sm">
+                                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                         {comment.usercommented}
                                     </span>
-                                    <span className="text-xs text-gray-600">
+                                    <span className="text-xs text-gray-600 dark:text-gray-400">
                                         {formatDistanceToNow(new Date(comment.commentedon))} ago
                                     </span>
                                 </div>
@@ -327,13 +327,13 @@ const Comments = ({ videoId }: { videoId?: string | string[] }) => {
                                     </div>
                                 ) : (
                                     <>
-                                        <p className="text-sm text-gray-800 mt-1">
+                                        <p className="mt-1 text-sm text-gray-800 dark:text-gray-200">
                                             {translations[comment._id] || comment.commentbody}
                                         </p>
                                         {comment.showLocation && comment.location && (
-                                            <p className="text-xs text-gray-500 mt-1">Location shared: {comment.location}</p>
+                                            <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">Location shared: {comment.location}</p>
                                         )}
-                                        <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500 mt-2">
+                                        <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-gray-600 dark:text-gray-400">
                                             {user && (
                                                 <>
                                                     <button onClick={() => handleReaction(comment._id, "like")} className="inline-flex items-center gap-1 hover:text-blue-600">

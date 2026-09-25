@@ -45,8 +45,8 @@ const ChannelHeader = ({ channel, user }: { channel: any; user: any }) => {
                             onClick={() => setIsSubscribed(!isSubscribed)}
                             className={`rounded-full px-6 py-2.5 font-semibold shadow-sm transition-colors ${
                                 isSubscribed 
-                                    ? "bg-secondary text-secondary-foreground hover:bg-secondary/80" 
-                                    : "bg-primary text-primary-foreground hover:bg-primary/90"
+                                    ? "bg-gray-200 text-gray-900 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600" 
+                                    : "bg-gradient-to-r from-red-600 to-rose-600 text-white hover:from-red-700 hover:to-rose-700"
                             }`}
                         >
                             {isSubscribed ? "Subscribed" : "Subscribe"}

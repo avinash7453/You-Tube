@@ -177,16 +177,16 @@ const Videoinfo = ({ video }: { video: any }) => {
     };
 
     return (
-        <div className="bg-white p-4 rounded-lg shadow-md">
-            <h1 className="text-xl font-bold mb-2">{video.videotitle}</h1>
+        <div className="rounded-lg bg-white p-4 text-gray-900 shadow-md dark:bg-gray-900 dark:text-gray-100">
+            <h1 className="mb-2 text-xl font-bold text-gray-900 dark:text-gray-100">{video.videotitle}</h1>
             <div className="mb-2 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center text-sm font-medium">
                         {video.videochannel?.[0]}
                     </div>
                     <div className="flex flex-col">
-                        <h3 className="font-medium">{video.videochannel}</h3>
-                        <p className="text-sm text-gray-500">1.2M subscribers</p>
+                        <h3 className="font-medium text-gray-900 dark:text-gray-100">{video.videochannel}</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">1.2M subscribers</p>
                     </div>
                 </div>
                 <button className="bg-blue-600 text-white px-4 py-2 rounded font-medium">
@@ -198,7 +198,7 @@ const Videoinfo = ({ video }: { video: any }) => {
                 <Button
                     variant="ghost"
                     size="sm"
-                    className={`rounded-full ${isLiked ? "bg-gray-100 text-black" : ""}`}
+                    className={`rounded-full text-gray-800 hover:bg-gray-200 dark:text-gray-100 dark:hover:bg-gray-700 ${isLiked ? "bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-white" : ""}`}
                     onClick={handleLike}
                 >
                     <ThumbsUp className={`w-5 h-5 mr-2 ${isLiked ? "fill-black text-black" : ""}`} />
@@ -210,7 +210,7 @@ const Videoinfo = ({ video }: { video: any }) => {
                 <Button
                     variant="ghost"
                     size="sm"
-                    className={`rounded-full ${isDisliked ? "bg-gray-100 text-black" : ""}`}
+                    className={`rounded-full text-gray-800 hover:bg-gray-200 dark:text-gray-100 dark:hover:bg-gray-700 ${isDisliked ? "bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-white" : ""}`}
                     onClick={handleDislike}
                 >
                     <ThumbsDown className={`w-5 h-5 mr-2 ${isDisliked ? "fill-black text-black" : ""}`} />
@@ -220,25 +220,25 @@ const Videoinfo = ({ video }: { video: any }) => {
                 <Button
                     variant="ghost"
                     size="sm"
-                    className={`bg-gray-100 rounded-full ${isWatchLater ? "text-primary" : ""}`}
+                    className={`rounded-full bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700 ${isWatchLater ? "text-blue-700 dark:text-blue-300" : ""}`}
                     onClick={handleWatchLater}
                 >
                     <Clock className="w-5 h-5 mr-2" />
                     {isWatchLater ? "Saved" : "Watch Later"}
                 </Button>
 
-                <Button variant="ghost" size="sm" className="bg-gray-100 rounded-full" onClick={shareVideo}>
+                <Button variant="ghost" size="sm" className="rounded-full bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700" onClick={shareVideo}>
                     <Share className="w-5 h-5 mr-2" />
                     Share
                 </Button>
-                <Button variant="ghost" size="sm" className="bg-gray-100 rounded-full" onClick={createWatchParty}>
+                <Button variant="ghost" size="sm" className="rounded-full bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700" onClick={createWatchParty}>
                     Watch party
                 </Button>
 
                 <Button
                     variant="ghost"
                     size="sm"
-                    className="bg-gray-100 rounded-full"
+                    className="rounded-full bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
                     onClick={handleDownload}
                     disabled={isDownloading}
                 >
@@ -246,19 +246,19 @@ const Videoinfo = ({ video }: { video: any }) => {
                     {isDownloading ? "Preparing..." : "Download"}
                 </Button>
 
-                <Button variant="ghost" size="icon" className="bg-gray-100 rounded-full">
+                <Button variant="ghost" size="icon" className="rounded-full bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700">
                     <MoreHorizontal />
                 </Button>
             </div>
 
             <div className="mt-4 space-y-3">
-                <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500">
+                <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                     <span>{video.views?.toLocaleString("en-US")} views</span>
                     <span>•</span>
                     <span>{formatDistanceToNow(publishedDate)} ago</span>
                 </div>
                 <div>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
                         {showFullDescription ? descriptionText : `${descriptionText.slice(0, 120)}${descriptionText.length > 120 ? "..." : ""}`}
                     </p>
                 </div>
