@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
-import { Bell, Menu, Mic, Moon, Search, Sun, User as UserIcon, Video } from "lucide-react";
+import { Bell, LoaderCircle, Menu, Mic, Moon, Search, Sun, User as UserIcon, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,7 +15,7 @@ import { useUser } from "@/lib/AuthContext";
 import axiosInstance from "@/lib/axiosinstance";
 
 const Header = () => {
-  const { User, loading, logout, login, handlegooglesignin } = useUser();
+  const { User, loading, signInLoading, logout, login, handlegooglesignin } = useUser();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -88,7 +88,10 @@ const Header = () => {
 
         <div className="flex items-center gap-2">
           {loading ? (
-            <div className="h-9 w-9 animate-pulse rounded-full bg-gray-200" />
+            <Button type="button" disabled aria-busy="true" className="flex items-center gap-2 bg-blue-600 text-white opacity-80">
+              <LoaderCircle className="h-4 w-4 animate-spin" />
+              Sign in
+            </Button>
           ) : User ? (
             <>
               <Button variant="ghost" size="icon" type="button" aria-label="Create video" className="text-gray-700 hover:bg-gray-100 hover:text-gray-950 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-white">
@@ -151,8 +154,14 @@ const Header = () => {
               </DropdownMenu>
             </>
           ) : (
-            <Button className="flex items-center gap-2 bg-blue-600 text-white hover:bg-blue-700" onClick={handlegooglesignin}>
-              <UserIcon className="w-4 h-4" />
+            <Button
+              type="button"
+              className="flex items-center gap-2 bg-blue-600 text-white hover:bg-blue-700"
+              onClick={handlegooglesignin}
+              disabled={signInLoading}
+              aria-busy={signInLoading}
+            >
+              {signInLoading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <UserIcon className="h-4 w-4" />}
               Sign in
             </Button>
           )}

@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
+import { getRedirectResult, onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
+import axios from "axios";
+import { toast } from "sonner";
 import { auth, provider } from "./firebase";
 import axiosInstance from "./axiosinstance";
 
@@ -8,6 +10,7 @@ const UserContext = createContext();
 export const UserProvider = ({ children }) => {
     const [User, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [signInLoading, setSignInLoading] = useState(false);
 
     const getDeviceId = () => {
         const key = "yourtube_device_id";
@@ -45,7 +48,6 @@ export const UserProvider = ({ children }) => {
                 localStorage.removeItem("user");
             }
         }
-        setLoading(false);
     }, []);
 
     const login = (userdata) => {
@@ -65,38 +67,25 @@ export const UserProvider = ({ children }) => {
     };
 
     const handlegooglesignin = async () => {
+        setSignInLoading(true);
         try {
-            const result = await signInWithPopup(auth, provider);
-            const firebaseuser = result.user;
-            
-            const payload = {
-                email: firebaseuser.email,
-                name: firebaseuser.displayName,
-                image: firebaseuser.photoURL || "https://github.com/shadcn.png",
-                deviceId: getDeviceId(),
-                region: getRegion(),
-            };
-            
-            const response = await axiosInstance.post("/user/login", payload);
-            if (response.data.requiresOtp) {
-                const otp = window.prompt("Enter the verification code sent to your email");
-                if (!otp) throw new Error("Login verification was cancelled");
-                const verified = await axiosInstance.post("/user/verify-otp", {
-                    userId: response.data.userId,
-                    otp,
-                });
-                login(verified.data.result);
-            } else {
-                login(response.data.result);
-            }
+            await signInWithPopup(auth, provider);
         } catch (error) {
-            console.error(error);
+            console.error("Popup sign-in error:", error);
+            setSignInLoading(false);
+            toast.error(
+                error?.code === "auth/unauthorized-domain"
+                    ? "This domain is not authorized for Firebase sign-in. Add it to Firebase Authentication's authorized domains."
+                    : error?.message || "Google sign-in could not be completed."
+            );
         }
     };
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (firebaseuser) => {
+            setSignInLoading(false);
             if (firebaseuser) {
+                setLoading(true);
                 try {
                     const payload = {
                         email: firebaseuser.email,
@@ -119,10 +108,40 @@ export const UserProvider = ({ children }) => {
                     }
                 } catch (error) {
                     console.error(error);
-                    await logout();
+                    setUser(null);
+                    localStorage.removeItem("user");
+                    if (axios.isAxiosError(error) && !error.response) {
+                        toast.error("Could not reach the backend. Check NEXT_PUBLIC_BACKEND_URL and confirm your backend service is running.");
+                    } else if (axios.isAxiosError(error)) {
+                        const responseMessage = error.response?.data?.message;
+                        if (error.response?.status === 503 && responseMessage === "Email OTP delivery is not configured") {
+                            toast.error("Sign-in needs email verification, but OTP email is not configured on the backend.");
+                        } else {
+                            toast.error(
+                                responseMessage ||
+                                `Backend sign-in failed${error.response?.status ? ` (HTTP ${error.response.status})` : ""}.`
+                            );
+                        }
+                    } else {
+                        toast.error(error?.message || "Sign-in could not be completed.");
+                    }
+                    try {
+                        await signOut(auth);
+                    } catch (signOutError) {
+                        console.error("Unable to clear Firebase sign-in after backend failure:", signOutError);
+                    }
+                } finally {
+                    setLoading(false);
                 }
+            } else {
+                setLoading(false);
             }
         });
+
+        getRedirectResult(auth).catch((error) => {
+            console.error("Google sign-in redirect failed:", error);
+        });
+
         return () => unsubscribe();
     }, []);
 
@@ -139,7 +158,7 @@ export const UserProvider = ({ children }) => {
     }, []);
 
     return (
-        <UserContext.Provider value={{ User, user: User, loading, login, logout, handlegooglesignin }}>
+        <UserContext.Provider value={{ User, user: User, loading, signInLoading, login, logout, handlegooglesignin }}>
             {children}
         </UserContext.Provider>
     );
